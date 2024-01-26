@@ -9,10 +9,10 @@ import Form from "react-bootstrap/Form";
 import { FormControl } from "react-bootstrap";
 
 function IngredientList(props) {
+  const [portionMultiplier, setPortionMultiplier] = useState(1);
   const [ingredientCall, setIngredientCall] = useState({
     state: "pending"
   });
-  const [portionMultiplier, setPortionMultiplier] = useState(1);
 
   useEffect(() => {
     fetch(`https://uucoffeeapi.hudatec.cz/api/ingredients`, {

@@ -27,11 +27,18 @@
   right: 0px;
 }
 
-.button {
+.buttonRight {
   margin-top: 10px;
   margin-left: 5px;
   margin-right: 10px;
   float: right;
+  width: 80px;
+}
+.buttonLeft {
+  margin-top: 10px;
+  margin-left: 5px;
+  margin-right: 10px;
+  float: left;
   width: 80px;
 }
 

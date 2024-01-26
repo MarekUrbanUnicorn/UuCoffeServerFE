@@ -36,7 +36,7 @@ function Listitems(props) {
               <td>{recipe.favorite && (<Icon size={1} path={mdiStar} />)}</td>
               <td>
                 <Button
-                  style={{ marginRight: "8px" }}
+                  className="button"
                   variant="outline-success"
                   onClick={() => navigate("/detail/" + recipe.id)}
                 >

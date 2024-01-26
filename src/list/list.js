@@ -1,5 +1,6 @@
 import ListItems from './listItems.js'
 import { useState, useMemo, useEffect } from 'react';
+import { Outlet, useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Navbar from "react-bootstrap/Navbar";
 import Form from "react-bootstrap/Form";
@@ -10,7 +11,24 @@ import { mdiLoading } from "@mdi/js";
 
 // import { useState } from 'react';
 function List(props) {
-  const [plainTextFilter, setPlainTextFilter] = useState("");
+  let navigate = useNavigate();
+  const [filter, setFilter] = useState({ plainTextFilter: "", ingredientId: -1 });
+  const [ingredientCall, setIngredientCall] = useState({
+    state: "pending"
+  });
+
+  useEffect(() => {
+    fetch(`https://uucoffeeapi.hudatec.cz/api/ingredients`, {
+      method: "GET",
+    }).then(async (response) => {
+      const responseJson = await response.json();
+      if (response.status >= 400) {
+        setIngredientCall({ state: "error", error: responseJson });
+      } else {
+        setIngredientCall({ state: "success", data: responseJson });
+      }
+    })
+  }, []); // an empty condition field means that the code will run only once
 
   const filteredStudentList = useMemo(() => {
 
@@ -19,22 +37,53 @@ function List(props) {
         return (
           item.name
             .toLocaleLowerCase()
-            .includes(plainTextFilter.toLocaleLowerCase())
+            .includes(filter.plainTextFilter.toLocaleLowerCase())
+          &&
+          (
+            filter.ingredientId === -1 ||
+            item.ingredients.map(ing => ing.ingredientId).includes(filter.ingredientId)
+          )
         );
       })
       .sort((item) => !item.favourite);
-  }, [plainTextFilter, props.recipies]);
+  }, [filter, props.recipies]);
+
+  switch (ingredientCall.state) {
+    case "pending":
+      return (
+        <div className={styles.loading}>
+          <Icon size={2} path={mdiLoading} spin={true} />
+        </div>
+      );
+    case "success":
+      break;
+
+    case "error":
+      return (
+        <div className={styles.error}>
+          <div>Failed to load class data.</div>
+          <br />
+          <pre>{JSON.stringify(ingredientCall.error, null, 2)}</pre>
+        </div>
+      );
+    default:
+      return null;
+  }
+
+  const ingredientOptions = ingredientCall.data
+    .map((data => (<option value={data.id}>{data.name}</option>)));
+
 
   // const [viewType, setViewType] = useState("grid");
   // const isGrid = viewType === "grid"; // isGrid je pomocná proměnná, kterou budeme dále používat pro řízení vzhledu
 
   function handleSearch(event) {
     event.preventDefault();
-    setPlainTextFilter(event.target["searchInput"].value);
+    setFilter({ plainTextFilter: event.target["searchInput"].value, ingredientId: parseInt(event.target["ingredientInput"].value) });
   }
 
   function handleSearchDelete(event) {
-    if (!event.target.value) setPlainTextFilter("");
+    if (!event.target.value) setFilter({ plainTextFilter: "", ingredientId: filter.ingredientId });
   }
 
   return <>
@@ -47,6 +96,10 @@ function List(props) {
         aria-label="Search"
         onChange={handleSearchDelete}
       />
+      <Form.Select name="ingredientInput">
+        <option value="-1">Přidat ingredienci</option>
+        {ingredientOptions}
+      </Form.Select>
       <Button style={{ marginRight: "8px" }} variant="outline-success" type="submit">
         <Icon size={1} path={mdiMagnify} />
       </Button>
@@ -63,6 +116,11 @@ function List(props) {
         {isGrid ? "Tabulka" : "Grid"}
       </Button> */}
     </Form>
+    <div className="button">
+      <Button style={{ marginRight: "8px" }} variant="outline-success" onClick={() => navigate("/detail/new")}>
+        Vytvořit recept
+      </Button>
+    </div>
     <ListItems recipeList={filteredStudentList} />
   </>;
 }

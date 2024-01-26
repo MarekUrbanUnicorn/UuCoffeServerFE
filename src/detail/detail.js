@@ -157,7 +157,10 @@ function Detail() {
         } />
       </Form>
       <div className="buttonRow">
-        <Button className="button" onClick={() => {
+      {!isCreate && <Button className="buttonLeft" onClick={() => {
+            navigate("/");
+        }}>Zpět</Button>}
+        <Button className="buttonRight" onClick={() => {
           if (isUpdate) {
             let uri = `https://uucoffeeapi.hudatec.cz/api/recipes`;
             if (!isCreate) {
@@ -187,7 +190,7 @@ function Detail() {
           }
           setUpdate(!isUpdate);
         }}>{isUpdate ? "Uložit" : "Upravit"}</Button>
-        {isUpdate && (<Button className="button" onClick={() => {
+        {isUpdate && (<Button className="buttonRight" onClick={() => {
           if (isCreate) {
             navigate("/");
           }
