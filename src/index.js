@@ -5,7 +5,7 @@ import App from './App';
 import Detail from './detail/detail.js';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ListCaller from './list/listCaller.js';
+import List from './list/list.js';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -14,7 +14,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} >
-          <Route path="" element={<ListCaller/>} />
+          <Route path="" element={<List/>} />
           <Route path="detail/:id" element={<Detail />} />
         </Route>
       </Routes>
